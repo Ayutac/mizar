@@ -1,21 +1,21 @@
 package org.abos.mizar.core;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class Reservation implements TextItem {
 
-    private final Map<TypeExpression, List<String>> variables;
+    private final List<TypeListing> listings;
 
-    public Reservation(Map<TypeExpression, List<String>> variables) {
-        this.variables = variables;
+    public Reservation(List<TypeListing> listings) {
+        this.listings = Collections.unmodifiableList(listings);
     }
 
     @Override
     public void checkSyntax(Environ environ) throws SyntaxException {
-        for (TypeExpression type : variables.keySet()) {
-            type.checkSyntax(environ);
+        for (TypeListing listing : listings) {
+            listing.checkSyntax(environ);
         }
     }
 
@@ -24,11 +24,11 @@ public class Reservation implements TextItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reservation that = (Reservation) o;
-        return Objects.equals(variables, that.variables);
+        return Objects.equals(listings, that.listings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variables);
+        return Objects.hash(listings);
     }
 }
