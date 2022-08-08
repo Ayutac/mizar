@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="863ecdd0-3c2c-41e2-9538-39e392555a60" name="Changes" comment="Some grammar implemented">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/mizar.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/Adjective.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/Article.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/ArticleReference.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/Environ.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/RadixType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/Reservation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/Syntax.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/SyntaxException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/TermExpression.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/TextItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/TypeExpression.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/abos/mizar/core/VocabularySymbols.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2D59OjOnier1koPjsmKWpwrteTT" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "jdk.selected.JAVA_MODULE": "corretto-17",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="863ecdd0-3c2c-41e2-9538-39e392555a60" name="Changes" comment="" />
+      <created>1659978047530</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1659978047530</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Some grammar implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some grammar implemented" />
+  </component>
+</project>
