@@ -1,4 +1,7 @@
 package org.abos.mizar.internal;
 
-public interface Statement extends ReasoningItem {
+public interface Statement extends TextItem, ReasoningItem {
+
+    String reference();
+
 }
