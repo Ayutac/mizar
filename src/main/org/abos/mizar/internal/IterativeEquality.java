@@ -15,11 +15,6 @@ public record IterativeEquality(List<TermExpression> terms, List<SimpleJustifica
     }
 
     @Override
-    public String ref() {
-        return ref;
-    }
-
-    @Override
     public void checkSyntax(Environ environ) throws SyntaxException {
         for (TermExpression term : terms) {
             term.checkSyntax(environ);

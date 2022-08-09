@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Is also Loci and Generalization
+ * Is also Loci, Generalization (without such) and Qualified-Segment
  */
 public record TypeListing(TypeExpression type, List<String> variables) implements DefinitionalPart, RegistrationPart, NotationPart, ReasoningItem {
 
