@@ -1,4 +1,4 @@
-package org.abos.mizar.core;
+package org.abos.mizar.internal;
 
 public record Adjective(String name, boolean negated) implements Syntax {
 

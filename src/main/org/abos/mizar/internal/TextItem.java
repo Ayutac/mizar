@@ -1,4 +1,4 @@
-package org.abos.mizar.core;
+package org.abos.mizar.internal;
 
 public interface TextItem extends Syntax {
 }

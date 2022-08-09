@@ -1,4 +1,4 @@
-package org.abos.mizar.core;
+package org.abos.mizar.internal;
 
 public class SyntaxException extends RuntimeException {
 

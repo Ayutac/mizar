@@ -1,4 +1,4 @@
-package org.abos.mizar.core;
+package org.abos.mizar.internal;
 
 import java.io.IOException;
 import java.util.*;
@@ -40,6 +40,9 @@ public final class Environ {
         this.theorems = Collections.unmodifiableSet(theorems);
         this.schemes = Collections.unmodifiableSet(schemes);
         this.requirements = Collections.unmodifiableSet(requirements);
+        for (VocabularySymbols symbol : VocabularySymbols.values()) {
+            vocabulary.put(symbol, new HashSet<>());
+        }
     }
 
     public Set<ArticleReference> getVocabularies() {
@@ -90,6 +93,9 @@ public final class Environ {
         if (isLoaded()) {
             throw new IllegalStateException("Environ already loaded!");
         }
+        // load in-built expressions
+        vocabulary.get(VocabularySymbols.M).add("set");
+        vocabulary.get(VocabularySymbols.R).add("=");
         // TODO load the rest in
         loaded = true;
     }
