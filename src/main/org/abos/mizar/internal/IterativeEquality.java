@@ -15,7 +15,7 @@ public record IterativeEquality(List<TermExpression> terms, List<SimpleJustifica
     }
 
     @Override
-    public String reference() {
+    public String ref() {
         return ref;
     }
 
