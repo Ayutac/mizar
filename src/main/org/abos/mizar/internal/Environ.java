@@ -5,84 +5,79 @@ import java.util.*;
 
 public final class Environ {
 
-    private final Set<ArticleReference> vocabularies;
-
-    private final List<ArticleReference> notations;
-
-    private final Set<ArticleReference> constructors;
-
-    private final Set<ArticleReference> registrations;
-
-    private final Set<ArticleReference> definitions;
-
-    private final Set<ArticleReference> expansions;
-
-    private final Set<ArticleReference> equalities;
-
-    private final Set<ArticleReference> theorems;
-
-    private final Set<ArticleReference> schemes;
-
-    private final Set<ArticleReference> requirements;
+    private final Map<EnvironSymbols, Collection<ArticleReference>> entries = new EnumMap<>(EnvironSymbols.class);
 
     private boolean loaded = false;
 
     private final Map<VocabularySymbols, Set<String>> vocabulary = new EnumMap<>(VocabularySymbols.class);
 
     public Environ(Set<ArticleReference> vocabularies, List<ArticleReference> notations, Set<ArticleReference> constructors, Set<ArticleReference> registrations, Set<ArticleReference> definitions, Set<ArticleReference> expansions, Set<ArticleReference> equalities, Set<ArticleReference> theorems, Set<ArticleReference> schemes, Set<ArticleReference> requirements) {
-        this.vocabularies = Collections.unmodifiableSet(vocabularies);
-        this.notations = Collections.unmodifiableList(notations);
-        this.constructors = Collections.unmodifiableSet(constructors);
-        this.registrations = Collections.unmodifiableSet(registrations);
-        this.definitions = Collections.unmodifiableSet(definitions);
-        this.expansions = Collections.unmodifiableSet(expansions);
-        this.equalities = Collections.unmodifiableSet(equalities);
-        this.theorems = Collections.unmodifiableSet(theorems);
-        this.schemes = Collections.unmodifiableSet(schemes);
-        this.requirements = Collections.unmodifiableSet(requirements);
+        entries.put(EnvironSymbols.VOCABULARIES, Collections.unmodifiableSet(vocabularies));
+        entries.put(EnvironSymbols.NOTATIONS, Collections.unmodifiableList(notations));
+        entries.put(EnvironSymbols.CONSTRUCTORS, Collections.unmodifiableSet(constructors));
+        entries.put(EnvironSymbols.REGISTRATIONS, Collections.unmodifiableSet(registrations));
+        entries.put(EnvironSymbols.DEFINITIONS, Collections.unmodifiableSet(definitions));
+        entries.put(EnvironSymbols.EXPANSIONS, Collections.unmodifiableSet(expansions));
+        entries.put(EnvironSymbols.EQUALITIES, Collections.unmodifiableSet(equalities));
+        entries.put(EnvironSymbols.THEOREMS, Collections.unmodifiableSet(theorems));
+        entries.put(EnvironSymbols.SCHEMES, Collections.unmodifiableSet(schemes));
+        entries.put(EnvironSymbols.REQUIREMENTS, Collections.unmodifiableSet(requirements));
         for (VocabularySymbols symbol : VocabularySymbols.values()) {
             vocabulary.put(symbol, new HashSet<>());
         }
     }
 
+    public Environ(Map<EnvironSymbols, Collection<ArticleReference>> entries) {
+        this((Set<ArticleReference>)entries.get(EnvironSymbols.VOCABULARIES),
+                (List<ArticleReference>)entries.get(EnvironSymbols.NOTATIONS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.CONSTRUCTORS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.REGISTRATIONS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.DEFINITIONS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.EXPANSIONS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.EQUALITIES),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.THEOREMS),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.SCHEMES),
+                (Set<ArticleReference>)entries.get(EnvironSymbols.REQUIREMENTS));
+    }
+
     public Set<ArticleReference> getVocabularies() {
-        return vocabularies;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.VOCABULARIES);
     }
 
     public List<ArticleReference> getNotations() {
-        return notations;
+        return (List<ArticleReference>)entries.get(EnvironSymbols.NOTATIONS);
     }
 
     public Set<ArticleReference> getConstructors() {
-        return constructors;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.CONSTRUCTORS);
     }
 
     public Set<ArticleReference> getRegistrations() {
-        return registrations;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.REGISTRATIONS);
     }
 
     public Set<ArticleReference> getDefinitions() {
-        return definitions;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.DEFINITIONS);
     }
 
     public Set<ArticleReference> getExpansions() {
-        return expansions;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.EXPANSIONS);
     }
 
     public Set<ArticleReference> getEqualities() {
-        return equalities;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.EQUALITIES);
     }
 
     public Set<ArticleReference> getTheorems() {
-        return theorems;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.THEOREMS);
     }
 
     public Set<ArticleReference> getSchemes() {
-        return schemes;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.SCHEMES);
     }
 
     public Set<ArticleReference> getRequirements() {
-        return requirements;
+        return (Set<ArticleReference>)entries.get(EnvironSymbols.REQUIREMENTS);
     }
 
     public boolean isLoaded() {
