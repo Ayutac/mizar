@@ -9,7 +9,7 @@ import java.io.IOException;
 public class TestParser {
 
     @Test
-    public void testEmptyArticle() throws IOException {
+    public void testEmptyArticle() throws IOException, ParseException {
         String emptyArticleStr = Parser.loadFromFile("/fixtures/articles/emptyArticle.miz");
         Article emptyArticle = new Parser().parse("EMPTY", emptyArticleStr);
         Assertions.assertTrue(emptyArticle.getEnviron().getVocabularies().isEmpty());
@@ -23,6 +23,17 @@ public class TestParser {
         Assertions.assertTrue(emptyArticle.getEnviron().getSchemes().isEmpty());
         Assertions.assertTrue(emptyArticle.getEnviron().getRequirements().isEmpty());
         Assertions.assertTrue(emptyArticle.getTextItems().isEmpty());
+    }
+
+    @Test
+    public void testEmptyArticleWrong() throws IOException {
+        String emptyArticleStr = Parser.loadFromFile("/fixtures/articles/emptyArticleWrongOrder.miz");
+        try {
+            new Parser().parse("EMPTY", emptyArticleStr);
+            Assertions.fail("Wrong order of 'environ' and 'begin' must cause a ParserException!");
+        } catch (ParseException ex) {
+            // expected
+        }
     }
 
 }
