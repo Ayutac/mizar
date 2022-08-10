@@ -2,6 +2,12 @@ package org.abos.mizar.parser;
 
 import org.abos.mizar.internal.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Parser {
@@ -14,7 +20,7 @@ public class Parser {
         final Environ environ = parseEnviron(content.substring(0, firstBeginIndex).trim());
         List<TextItem> textItems = new LinkedList<>();
         // TODO parse text items
-        return new Article(name, environ, textItems);
+        return new Article(new ArticleReference(name), environ, textItems);
     }
 
     protected Environ parseEnviron(final String environContent) {
@@ -27,7 +33,11 @@ public class Parser {
             entries.put(symbol, symbol.createEmptyCollection());
         }
 
-        String[] environParts = environContent.substring(7).trim().split(";");
+        final String trimmedEnvironContent = environContent.substring(7).trim();
+        if (trimmedEnvironContent.isEmpty()) {
+            return new Environ(entries);
+        }
+        final String[] environParts = trimmedEnvironContent.split(";");
         for (final String part : environParts) {
             String trimmedPart = part.trim();
             int spaceIndex = trimmedPart.indexOf(' ');
@@ -52,6 +62,10 @@ public class Parser {
             }
         }
         return new Environ(entries);
+    }
+
+    public static String loadFromFile(String file) throws IOException {
+        return Files.readString(Path.of(Parser.class.getResource(file).getPath()));
     }
 
 }
