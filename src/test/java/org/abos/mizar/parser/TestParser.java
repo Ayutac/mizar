@@ -11,7 +11,7 @@ public class TestParser {
 
     @Test
     public void testEmptyArticle() throws IOException, ParseException {
-        String emptyArticleStr = Utils.loadFromFile("/fixtures/articles/emptyArticle.miz");
+        String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticle.miz");
         Article emptyArticle = new Parser().parse("EMPTY", emptyArticleStr);
         Assertions.assertTrue(emptyArticle.getEnviron().getVocabularies().isEmpty());
         Assertions.assertTrue(emptyArticle.getEnviron().getNotations().isEmpty());
@@ -28,7 +28,7 @@ public class TestParser {
 
     @Test
     public void testEmptyArticleWrong() throws IOException {
-        String emptyArticleStr = Utils.loadFromFile("/fixtures/articles/emptyArticleWrongOrder.miz");
+        String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleWrongOrder.miz");
         try {
             new Parser().parse("EMPTY", emptyArticleStr);
             Assertions.fail("Wrong order of 'environ' and 'begin' must cause a ParserException!");
@@ -39,7 +39,7 @@ public class TestParser {
 
     @Test
     public void testEmptyArticleNoEnviron() throws IOException {
-        String emptyArticleStr = Utils.loadFromFile("/fixtures/articles/emptyArticleNoEnviron.miz");
+        String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleNoEnviron.miz");
         try {
             new Parser().parse("EMPTY", emptyArticleStr);
             Assertions.fail("Missing 'environ' must cause a ParserException!");
@@ -50,7 +50,7 @@ public class TestParser {
 
     @Test
     public void testEmptyArticleNoBegin() throws IOException {
-        String emptyArticleStr = Utils.loadFromFile("/fixtures/articles/emptyArticleNoBegin.miz");
+        String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleNoBegin.miz");
         try {
             new Parser().parse("EMPTY", emptyArticleStr);
             Assertions.fail("Missing 'begin' must cause a ParserException!");
