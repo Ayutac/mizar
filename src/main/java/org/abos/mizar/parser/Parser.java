@@ -1,5 +1,6 @@
 package org.abos.mizar.parser;
 
+import org.abos.mizar.Utils;
 import org.abos.mizar.internal.*;
 
 import java.util.Collection;
@@ -10,14 +11,16 @@ import java.util.List;
 public class Parser {
 
     public Article parse(final String name, final String content) throws ParseException {
-        int firstBeginIndex = content.indexOf("begin");
+        ArticleReference artName = new ArticleReference(name);
+        final String noComments = Utils.removeComments(content);
+        int firstBeginIndex = noComments.indexOf("begin");
         if (firstBeginIndex == -1) {
             throw new ParseException("No 'begin' in article!");
         }
-        final Environ environ = parseEnviron(content.substring(0, firstBeginIndex).trim());
+        final Environ environ = parseEnviron(noComments.substring(0, firstBeginIndex).trim());
         List<TextItem> textItems = new LinkedList<>();
         // TODO parse text items
-        return new Article(new ArticleReference(name), environ, textItems);
+        return new Article(artName, environ, textItems);
     }
 
     protected Environ parseEnviron(final String environContent) throws ParseException{
@@ -41,13 +44,10 @@ public class Parser {
             if (spaceIndex == -1) {
                 throw new ParseException("\"" + part + "\" of the environ is invalid!");
             }
-            if (trimmedPart.charAt(trimmedPart.length()-1) != ';') {
-                throw new ParseException("Environ parts must end with ';', but \"" + part + "\" doesn't.");
-            }
             boolean wasParsed = false;
             for (final EnvironSymbols symbol : EnvironSymbols.values()) {
                 if (trimmedPart.startsWith(symbol.getName())) {
-                    for (final String ref : trimmedPart.substring(spaceIndex+1, trimmedPart.length()-1).split(",")) {
+                    for (final String ref : trimmedPart.substring(spaceIndex+1, trimmedPart.length()).split(",")) {
                         entries.get(symbol).add(new ArticleReference(ref.trim()));
                     }
                     wasParsed = true;

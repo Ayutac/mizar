@@ -2,6 +2,7 @@ package org.abos.mizar.parser;
 
 import org.abos.mizar.Utils;
 import org.abos.mizar.internal.Article;
+import org.abos.mizar.internal.ArticleReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -57,6 +58,44 @@ public class TestParser {
         } catch (ParseException ex) {
             // expected
         }
+    }
+
+    @Test
+    public void testTarski() throws IOException, ParseException {
+        String tarskiStr = Utils.loadFromMizar("/mml/tarski.miz");
+        Article tarski = new Parser().parse("TARSKI", tarskiStr);
+
+        Assertions.assertTrue(tarski.getEnviron().getVocabularies().contains(new ArticleReference("TARSKI")));
+        Assertions.assertTrue(tarski.getEnviron().getNotations().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getConstructors().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getRegistrations().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getDefinitions().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getExpansions().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getEqualities().isEmpty());
+        Assertions.assertTrue(tarski.getEnviron().getTheorems().contains(new ArticleReference("TARSKI_0")));
+        Assertions.assertTrue(tarski.getEnviron().getSchemes().contains(new ArticleReference("TARSKI_0")));
+        Assertions.assertTrue(tarski.getEnviron().getRequirements().isEmpty());
+        // TODO test the body
+    }
+
+    @Test
+    public void testXboole0() throws IOException, ParseException {
+        String xboole0Str = Utils.loadFromMizar("/mml/xboole_0.miz");
+        Article xboole0 = new Parser().parse("XBOOLE_0", xboole0Str);
+        ArticleReference tarski = new ArticleReference("TARSKI");
+
+        Assertions.assertTrue(xboole0.getEnviron().getVocabularies().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getVocabularies().contains(new ArticleReference("XBOOLE_0")));
+        Assertions.assertTrue(xboole0.getEnviron().getNotations().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getConstructors().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getRegistrations().isEmpty());
+        Assertions.assertTrue(xboole0.getEnviron().getDefinitions().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getExpansions().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getEqualities().isEmpty());
+        Assertions.assertTrue(xboole0.getEnviron().getTheorems().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getSchemes().contains(tarski));
+        Assertions.assertTrue(xboole0.getEnviron().getRequirements().isEmpty());
+        // TODO test the body
     }
 
 }

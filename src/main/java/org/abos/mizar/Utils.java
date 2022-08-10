@@ -38,4 +38,8 @@ public class Utils {
                 .map(art -> art.toUpperCase(Locale.ROOT))
                 .map(ArticleReference::new).collect(Collectors.toList());
     }
+
+    public static String removeComments(String content) {
+        return content.replaceAll("::.*", "");
+    }
 }
