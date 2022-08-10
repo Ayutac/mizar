@@ -8,7 +8,7 @@ import java.io.IOException;
 public class TestTypeExpression {
 
     @Test
-    public void testSetExpression() throws IOException {
+    public void testSetExpression() throws IOException, SyntaxException {
         Environ environ = TestEnviron.createEmptyEnviron();
         environ.load();
         TypeExpression setExpression = new TypeExpression(new RadixType("set", true));

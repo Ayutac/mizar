@@ -20,7 +20,7 @@ public record RadixType(String name, boolean mode, List<TermExpression> termList
     }
 
     @Override
-    public void checkSyntax(Environ environ) {
+    public void checkSyntax(Environ environ) throws SyntaxException {
         if (mode && !environ.isValidSymbol(name, VocabularySymbols.M)) {
             throw new SyntaxException("*101 Unknown mode " + name);
         }
