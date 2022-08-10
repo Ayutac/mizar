@@ -2,9 +2,6 @@ package org.abos.mizar.parser;
 
 import org.abos.mizar.internal.*;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -62,10 +59,6 @@ public class Parser {
             }
         }
         return new Environ(entries);
-    }
-
-    public static String loadFromFile(String file) throws IOException {
-        return Files.readString(Path.of(Parser.class.getResource(file).getPath()));
     }
 
 }
