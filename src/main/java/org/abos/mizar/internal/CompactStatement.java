@@ -8,7 +8,6 @@ public record CompactStatement(Proposition proposition, Justification justificat
         justification.checkSyntax(environ);
     }
 
-    @Override
     public String ref() {
         return proposition.ref();
     }
