@@ -5,19 +5,19 @@ import java.util.List;
 
 public class Article {
 
-    private final String name;
+    private final ArticleReference name;
 
     private final Environ environ;
 
     private final List<TextItem> textItems;
 
-    public Article(String name, Environ environ, List<TextItem> textItems) {
+    public Article(ArticleReference name, Environ environ, List<TextItem> textItems) {
         this.name = name;
         this.environ = environ;
         this.textItems = Collections.unmodifiableList(textItems);
     }
 
-    public String getName() {
+    public ArticleReference getName() {
         return name;
     }
 
