@@ -36,4 +36,26 @@ public class TestParser {
         }
     }
 
+    @Test
+    public void testEmptyArticleNoEnviron() throws IOException {
+        String emptyArticleStr = Parser.loadFromFile("/fixtures/articles/emptyArticleNoEnviron.miz");
+        try {
+            new Parser().parse("EMPTY", emptyArticleStr);
+            Assertions.fail("Missing 'environ' must cause a ParserException!");
+        } catch (ParseException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testEmptyArticleNoBegin() throws IOException {
+        String emptyArticleStr = Parser.loadFromFile("/fixtures/articles/emptyArticleNoBegin.miz");
+        try {
+            new Parser().parse("EMPTY", emptyArticleStr);
+            Assertions.fail("Missing 'begin' must cause a ParserException!");
+        } catch (ParseException ex) {
+            // expected
+        }
+    }
+
 }
