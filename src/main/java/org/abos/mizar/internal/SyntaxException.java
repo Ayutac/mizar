@@ -1,6 +1,6 @@
 package org.abos.mizar.internal;
 
-public class SyntaxException extends RuntimeException {
+public class SyntaxException extends Exception {
 
     public SyntaxException() {
         super();

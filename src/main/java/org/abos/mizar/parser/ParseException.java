@@ -1,6 +1,6 @@
 package org.abos.mizar.parser;
 
-public class ParseException extends RuntimeException {
+public class ParseException extends Exception {
 
     public ParseException() {
         super();
