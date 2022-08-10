@@ -27,7 +27,7 @@ public class TestUtils {
     @Test
     public void testUnknownArticle() throws IOException {
         try {
-            Utils.loadFromMizar("/abs/thisArticleDoesNotExist.abs");
+            Utils.loadFromMizar("/abstr/thisArticleDoesNotExist.abs");
         } catch (NoSuchFileException ex) {
             // expected
         }
