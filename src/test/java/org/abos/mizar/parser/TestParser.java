@@ -63,9 +63,31 @@ public class TestParser {
 
     @Test
     public void testReservationArticle() throws IOException, ParseException {
-        String reservationArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticle.miz");
-        Article reservationArticle = new Parser().parse("RES", reservationArticleStr);
+        String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticle.miz");
+        Article resArticle = new Parser().parse("RES", resArticleStr);
+        // TODO content assertions
+    }
 
+    @Test
+    public void testReservationArticleMissingFor() throws IOException, ParseException  {
+        String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingFor.miz");
+        try {
+            new Parser().parse("RES", resArticleStr);
+            Assertions.fail("Missing 'for' must cause a ParserException!");
+        } catch (ParseException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testReservationArticleMissingAttr() throws IOException, ParseException  {
+        String reservationArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingAttr.miz");
+        try {
+            new Parser().parse("RES", reservationArticleStr);
+            Assertions.fail("Missing attribute after 'non' must cause a ParserException!");
+        } catch (ParseException ex) {
+            // expected
+        }
     }
 
     @Disabled

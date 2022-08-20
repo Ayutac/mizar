@@ -118,7 +118,7 @@ public class Parser {
             radix = new RadixType(content.substring(modeIndex), true);
         }
         else {
-            modeIndex = content.lastIndexOf(" ", ofIndex)+1;
+            modeIndex = content.lastIndexOf(" ", ofIndex-2)+1;
             radix = new RadixType(content.substring(modeIndex, ofIndex-1), true,
                     parseTermExpressionList(content.substring(ofIndex+3).trim()));
         }

@@ -1,3 +1,6 @@
 environ
 begin
 reserve x,y for set;
+reserve z for Subset of x;
+reserve X,Y for non empty set, A,B for Subset of X;
+reserve C for Subset of Y, S for set;
