@@ -21,7 +21,7 @@ public class Utils {
         // no instantiation
     }
 
-    public static String loadFromResource(String file) throws IOException {
+    public static String loadFromResource(final String file) throws IOException {
         URL url = Utils.class.getResource(file);
         if (url == null) {
             throw new NoSuchFileException(file + "not found!");
@@ -29,7 +29,7 @@ public class Utils {
         return Files.readString(Path.of(url.getPath()));
     }
 
-    public static String loadFromMizar(String file) throws IOException {
+    public static String loadFromMizar(final String file) throws IOException {
         return Files.readString(Path.of(MIZFILES, file));
     }
 
@@ -39,7 +39,9 @@ public class Utils {
                 .map(ArticleReference::new).collect(Collectors.toList());
     }
 
-    public static String removeComments(String content) {
+    public static String removeComments(final String content) {
         return content.replaceAll("::.*", "");
     }
+
+
 }
