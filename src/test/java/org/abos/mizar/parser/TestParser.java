@@ -4,6 +4,7 @@ import org.abos.mizar.Utils;
 import org.abos.mizar.internal.Article;
 import org.abos.mizar.internal.ArticleReference;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -61,6 +62,14 @@ public class TestParser {
     }
 
     @Test
+    public void testReservationArticle() throws IOException, ParseException {
+        String reservationArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticle.miz");
+        Article reservationArticle = new Parser().parse("RES", reservationArticleStr);
+
+    }
+
+    @Disabled
+    @Test
     public void testTarski() throws IOException, ParseException {
         String tarskiStr = Utils.loadFromMizar("/mml/tarski.miz");
         Article tarski = new Parser().parse("TARSKI", tarskiStr);
@@ -78,6 +87,7 @@ public class TestParser {
         // TODO test the body
     }
 
+    @Disabled
     @Test
     public void testXboole0() throws IOException, ParseException {
         String xboole0Str = Utils.loadFromMizar("/mml/xboole_0.miz");
