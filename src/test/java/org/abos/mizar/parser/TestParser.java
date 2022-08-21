@@ -65,11 +65,12 @@ public class TestParser {
     public void testReservationArticle() throws IOException, ParseException {
         String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticle.miz");
         Article resArticle = new Parser().parse("RES", resArticleStr);
+        Assertions.assertEquals(4, resArticle.getTextItems().size());
         // TODO content assertions
     }
 
     @Test
-    public void testReservationArticleMissingFor() throws IOException, ParseException  {
+    public void testReservationArticleMissingFor() throws IOException  {
         String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingFor.miz");
         try {
             new Parser().parse("RES", resArticleStr);
@@ -80,7 +81,7 @@ public class TestParser {
     }
 
     @Test
-    public void testReservationArticleMissingAttr() throws IOException, ParseException  {
+    public void testReservationArticleMissingAttr() throws IOException  {
         String reservationArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingAttr.miz");
         try {
             new Parser().parse("RES", reservationArticleStr);
