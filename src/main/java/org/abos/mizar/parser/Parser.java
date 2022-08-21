@@ -4,8 +4,21 @@ import org.abos.mizar.Utils;
 import org.abos.mizar.internal.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Parser {
+
+    public static final Collection<String> END_STARTERS = Collections.unmodifiableCollection(Arrays.asList(
+            "proof", "now", "hereby", "suppose"
+    ));
+
+    public static final Pattern END_STARTERS_PATTERN = Pattern.compile(String.join("|", END_STARTERS));
+
+    public static final Pattern END_PATTERN = Pattern.compile("end\\s*;");
+
+    public static final Pattern LABEL_PATTERN = Pattern.compile("[A-Za-z]\\w*:");
 
     public Article parse(final String name, final String content) throws ParseException {
         final ArticleReference artName = new ArticleReference(name);
@@ -20,6 +33,9 @@ public class Parser {
         while (!remainder.isEmpty()) {
             if (remainder.startsWith(TextItem.RESERVATION)) {
                 remainder = parseReservation(remainder.substring(TextItem.RESERVATION.length()).trim(), textItems);
+            }
+            if (remainder.startsWith(TextItem.THEOREM)) {
+                remainder = parseCompactStatement(remainder.substring(TextItem.THEOREM.length()).trim(), textItems);
             }
             // TODO parse remaining text items
         }
@@ -65,12 +81,53 @@ public class Parser {
     }
 
     protected String parseReservation(final String remainder, final List<TextItem> textItems) throws ParseException {
-        int endIndex = remainder.indexOf(";");
+        int endIndex = remainder.indexOf(';');
         if (endIndex == -1) {
             throw new ParseException("No end of '" + TextItem.RESERVATION + "'!");
         }
         textItems.add(new Reservation(parseTypeListings(remainder.substring(0, endIndex).trim(), "for")));
         return remainder.substring(endIndex+1).trim();
+    }
+
+    protected String parseCompactStatement(final String remainder, final List<TextItem> textItems) throws ParseException {
+        // find the end of the theorem
+        int noJustIndex = remainder.indexOf(';');
+        int justIndex = remainder.indexOf("proof");
+        int justStartIndex = -1;
+        int justEndIndex = -1;
+        Utils.IntPair justificationEnd = null;
+        if (noJustIndex != -1 && (justIndex == -1 || noJustIndex < justIndex)) {
+            justStartIndex = noJustIndex;
+            justEndIndex = justStartIndex+1;
+        }
+        else if (justIndex == -1) {
+            throw new ParseException("*395 Justification expected!");
+        }
+        else {
+            justStartIndex = justIndex;
+            justificationEnd = findEndIndex(remainder.substring(justIndex), "proof");
+            justEndIndex = justIndex+justificationEnd.end();
+        }
+        // parse the label
+        String propositionStr = remainder.substring(0, justStartIndex);
+        String formula = propositionStr;
+        String label = null;
+        Matcher labelMatcher = LABEL_PATTERN.matcher(propositionStr);
+        if (labelMatcher.find() && labelMatcher.start() == 0) {
+            label = labelMatcher.group();
+            // remove trailing :
+            label = label.substring(0, label.length()-1);
+            formula = propositionStr.substring(labelMatcher.end());
+        }
+        // parse the formula expression
+        Proposition proposition = new Proposition(parseFormulaExpression(formula.trim()), label);
+        // parse the justification
+        Justification just = null;
+        if (justificationEnd != null) {
+            just = parseJustification(remainder.substring(justStartIndex+5, justIndex+justificationEnd.start()));
+        }
+        textItems.add(new CompactStatement(proposition, just));
+        return remainder.substring(justEndIndex).trim();
     }
 
     protected List<TypeListing> parseTypeListings(final String context, final String sepKeyWord) throws ParseException {
@@ -125,9 +182,19 @@ public class Parser {
         return new TypeExpression(radix, parseAdjectiveCluster(content.substring(0, modeIndex).trim()));
     }
 
-    protected List<TermExpression> parseTermExpressionList(final String content) {
+    protected List<TermExpression> parseTermExpressionList(final String content) throws ParseException {
         // TODO implement correctly
         return Collections.emptyList();
+    }
+
+    protected FormulaExpression parseFormulaExpression(final String content) throws ParseException {
+        // TODO implement correctly
+        return null;
+    }
+
+    protected Justification parseJustification(final String content) throws ParseException {
+        // TODO implement correctly
+        return null;
     }
 
     protected List<Adjective> parseAdjectiveCluster(final String content) throws ParseException {
@@ -167,6 +234,43 @@ public class Parser {
         return Arrays.stream(content.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty()).toList();
+    }
+
+    protected Utils.IntPair findEndIndex(final String context, final String starter) throws ParseException {
+        if (!END_STARTERS.contains(starter)) {
+            throw new IllegalArgumentException("'" + starter + "' cannot close with 'end'!");
+        }
+        final int startIndex = context.indexOf(starter);
+        if (startIndex == -1) {
+            throw new IllegalArgumentException("'" + starter + "' doesn't appear within context!");
+        }
+        String excerpt = context.substring(startIndex+starter.length()).trim();
+        int offset = context.indexOf(excerpt);
+        Matcher startMatcher = END_STARTERS_PATTERN.matcher(excerpt);
+        Matcher endMatcher = END_PATTERN.matcher(excerpt);
+        if (!endMatcher.find()) {
+            throw new ParseException("*214 No 'end' in context!");
+        }
+        boolean matchEnd = false;
+        int count = 1;
+        while (count > 0) {
+            // note that the positions of 'find()' in the ifs are extremely important and sensitive to changes
+            if (!startMatcher.find()) {
+                matchEnd = true;
+            }
+            else if (startMatcher.start() < endMatcher.start()) {
+                matchEnd = false;
+                count++;
+            }
+            if (matchEnd && !endMatcher.find()) {
+                throw new ParseException("*214 Not enough 'end's but " + count + "are needed!");
+            }
+            else {
+                matchEnd = false;
+                count--;
+            }
+        }
+        return new Utils.IntPair(offset+endMatcher.start(), offset+endMatcher.end());
     }
 
 }

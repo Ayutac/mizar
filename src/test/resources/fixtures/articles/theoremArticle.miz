@@ -1,0 +1,19 @@
+environ
+begin
+
+theorem
+  for x being set holds x is set;
+
+theorem Th2:
+  for x,y being set st x = y holds y is set;
+
+theorem
+  for x,y being set st x = y holds y is set
+proof
+  let x,y be set;
+  assume A1: x = y;
+  now
+    thus x = y by A1;
+  end;
+  thus thesis;
+end;

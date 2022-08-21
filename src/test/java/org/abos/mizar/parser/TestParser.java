@@ -91,6 +91,14 @@ public class TestParser {
         }
     }
 
+    @Test
+    public void testTheoremArticle() throws IOException, ParseException {
+        String thsArticleStr = Utils.loadFromResource("/fixtures/articles/theoremArticle.miz");
+        Article thsArticle = new Parser().parse("THS", thsArticleStr);
+        Assertions.assertEquals(3, thsArticle.getTextItems().size());
+        // TODO content assertions
+    }
+
     @Disabled
     @Test
     public void testTarski() throws IOException, ParseException {

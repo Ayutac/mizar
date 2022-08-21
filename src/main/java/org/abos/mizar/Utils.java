@@ -7,8 +7,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -16,6 +15,8 @@ public class Utils {
     public final static String MIZFILES = System.getenv("MIZFILES");
 
     public final static String MML_LAR = "mml.lar";
+
+    public record IntPair(int start, int end) {}
 
     private Utils() {
         // no instantiation
@@ -42,6 +43,5 @@ public class Utils {
     public static String removeComments(final String content) {
         return content.replaceAll("::.*", "");
     }
-
 
 }
