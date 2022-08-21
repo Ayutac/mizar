@@ -31,6 +31,9 @@ public class Parser {
         List<TextItem> textItems = new LinkedList<>();
         remainder = remainder.substring(firstBeginIndex+5).trim();
         while (!remainder.isEmpty()) {
+            if (remainder.startsWith("begin")) {
+                remainder = remainder.substring(5);
+            }
             if (remainder.startsWith(TextItem.RESERVATION)) {
                 remainder = parseReservation(remainder.substring(TextItem.RESERVATION.length()).trim(), textItems);
             }
