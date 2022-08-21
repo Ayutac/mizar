@@ -1,4 +1,4 @@
 package org.abos.mizar.internal;
 
-public interface Assumption extends ReasoningItem {
+public interface Assumption extends SkeletonItem, DefinitionalPart {
 }

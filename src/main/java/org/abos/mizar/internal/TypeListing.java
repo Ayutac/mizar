@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Is also Loci, Generalization (without such) and Qualified-Segment
+ * Is also Qualified-Segment
  */
-public record TypeListing(TypeExpression type, List<String> variables) implements DefinitionalPart, RegistrationPart, NotationPart, ReasoningItem {
+public record TypeListing(TypeExpression type, List<String> variables) implements DefinitionalPart, RegistrationPart, NotationPart {
 
     public TypeListing(TypeExpression type, List<String> variables) {
         this.type = type;
