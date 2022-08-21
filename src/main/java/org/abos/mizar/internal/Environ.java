@@ -88,9 +88,13 @@ public final class Environ {
         if (isLoaded()) {
             throw new IllegalStateException("Environ already loaded!");
         }
-        // load in-built expressions
+        // load built-in expressions
         vocabulary.get(VocabularySymbols.M).add("set");
         vocabulary.get(VocabularySymbols.R).add("=");
+        vocabulary.get(VocabularySymbols.K).add("[");
+        vocabulary.get(VocabularySymbols.L).add("]");
+        vocabulary.get(VocabularySymbols.K).add("{");
+        vocabulary.get(VocabularySymbols.L).add("}");
         // TODO load the rest in
         loaded = true;
     }
