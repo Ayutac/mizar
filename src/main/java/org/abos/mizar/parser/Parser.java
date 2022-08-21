@@ -6,7 +6,6 @@ import org.abos.mizar.internal.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Parser {
 
@@ -34,11 +33,11 @@ public class Parser {
             if (remainder.startsWith("begin")) {
                 remainder = remainder.substring(5);
             }
-            if (remainder.startsWith(TextItem.RESERVATION)) {
+            else if (remainder.startsWith(TextItem.RESERVATION)) {
                 remainder = parseReservation(remainder.substring(TextItem.RESERVATION.length()).trim(), textItems);
             }
-            if (remainder.startsWith(TextItem.THEOREM)) {
-                remainder = parseCompactStatement(remainder.substring(TextItem.THEOREM.length()).trim(), textItems);
+            else if (remainder.startsWith(TextItem.THEOREM)) {
+                remainder = parseCompactStatement(remainder.substring(TextItem.THEOREM.length()).trim(), true, textItems);
             }
             // TODO parse remaining text items
         }
@@ -92,7 +91,7 @@ public class Parser {
         return remainder.substring(endIndex+1).trim();
     }
 
-    protected String parseCompactStatement(final String remainder, final List<TextItem> textItems) throws ParseException {
+    protected String parseCompactStatement(final String remainder, boolean theorem, final List<TextItem> textItems) throws ParseException {
         // find the end of the theorem
         int noJustIndex = remainder.indexOf(';');
         int justIndex = remainder.indexOf("proof");
@@ -129,7 +128,7 @@ public class Parser {
         if (justificationEnd != null) {
             just = parseJustification(remainder.substring(justStartIndex+5, justIndex+justificationEnd.start()));
         }
-        textItems.add(new CompactStatement(proposition, just));
+        textItems.add(new CompactStatement(proposition, just, theorem));
         return remainder.substring(justEndIndex).trim();
     }
 

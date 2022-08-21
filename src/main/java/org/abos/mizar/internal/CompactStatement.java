@@ -1,6 +1,6 @@
 package org.abos.mizar.internal;
 
-public record CompactStatement(Proposition proposition, Justification justification) implements Statement {
+public record CompactStatement(Proposition proposition, Justification justification, boolean theorem) implements Statement {
 
     @Override
     public void checkSyntax(Environ environ) throws SyntaxException {
