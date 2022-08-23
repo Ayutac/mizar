@@ -18,6 +18,8 @@ public class Utils {
 
     public record IntPair(int start, int end) {}
 
+    public record IntTriple(int start, int middle, int end) {}
+
     private Utils() {
         // no instantiation
     }
