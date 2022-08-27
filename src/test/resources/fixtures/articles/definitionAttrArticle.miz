@@ -1,0 +1,19 @@
+environ
+
+  vocabularies RELAT_1, RELAT_2;
+
+begin
+
+definition
+  let R be Relation;
+  attr R is symmetric means
+  R is_symmetric_in field R;
+  attr R is asymmetric means
+  R is_asymmetric_in field R;
+end;
+
+definition
+  let R be Relation;
+  redefine attr R is symmetric means
+  R is_symmetric_in field R;
+end;

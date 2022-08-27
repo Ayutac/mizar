@@ -3,6 +3,7 @@ package org.abos.mizar.parser;
 import org.abos.mizar.Utils;
 import org.abos.mizar.internal.Article;
 import org.abos.mizar.internal.ArticleReference;
+import org.abos.mizar.internal.DefinitionalItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -89,6 +90,18 @@ public class TestArticleParser {
         } catch (ParseException ex) {
             // expected
         }
+    }
+
+    @Test
+    public void testDefinitionAttrArticle() throws IOException, ParseException {
+        String attrArticleStr = Utils.loadFromResource("/fixtures/articles/definitionAttrArticle.miz");
+        Article attrArticle = new ArticleParser().parse("THS", attrArticleStr);
+        Assertions.assertEquals(2, attrArticle.getTextItems().size());
+        DefinitionalItem definitional = (DefinitionalItem)attrArticle.getTextItems().get(0);
+        Assertions.assertEquals(3, definitional.parts().size());
+        definitional = (DefinitionalItem)attrArticle.getTextItems().get(1);
+        Assertions.assertEquals(2, definitional.parts().size());
+        // TODO more content assertions
     }
 
     @Test

@@ -137,9 +137,11 @@ public class ArticleParser {
             }
             if (excerpt.startsWith("let")) {
                 parts.add(parseGeneralization(excerpt.substring(3, sepIndex).trim()));
+                excerpt = excerpt.substring(sepIndex+1).trim();
             }
             else if (excerpt.startsWith("assume")) {
                 parts.add(parseAssumption(excerpt.substring(6, sepIndex)));
+                excerpt = excerpt.substring(sepIndex+1).trim();
             }
             // TODO parse auxiliary item
             else {
@@ -166,7 +168,6 @@ public class ArticleParser {
                     throw new ParseException("Unknown definition type!");
                 }
             }
-            excerpt = excerpt.substring(sepIndex+1);
         }
         textItems.add(new DefinitionalItem(parts));
         return remainder.substring(defEnd.end()+1).trim();
@@ -178,13 +179,13 @@ public class ArticleParser {
         if (sepIndex == -1) {
             throw new ParseException("Missing 'is'!");
         }
-        final String attrName = excerpt.substring(0, sepIndex).trim();
+        final String attrVariable = excerpt.substring(0, sepIndex).trim();
         excerpt = excerpt.substring(sepIndex+2).trim();
         sepIndex = excerpt.indexOf("means");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'means'!");
         }
-        final AttributePattern pattern = new AttributePattern(attrName, excerpt.substring(0,sepIndex).trim());
+        final AttributePattern pattern = new AttributePattern(excerpt.substring(0,sepIndex).trim(), attrVariable);
         excerpt = excerpt.substring(sepIndex+5).trim();
         sepIndex = excerpt.indexOf(';');
         if (sepIndex == -1) {
@@ -413,7 +414,7 @@ public class ArticleParser {
                 count++;
             }
             if (matchEnd && !endMatcher.find()) {
-                throw new ParseException("*214 Not enough 'end's but " + count + "are needed!");
+                throw new ParseException("*214 Not enough 'end's but " + count + " are needed!");
             }
             else {
                 matchEnd = false;
