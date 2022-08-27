@@ -16,6 +16,8 @@ public class Utils {
 
     public final static String MML_LAR = "mml.lar";
 
+    public final static String MML_VCT = "mml.vct";
+
     public record IntPair(int start, int end) {}
 
     public record IntTriple(int start, int middle, int end) {}
@@ -42,8 +44,27 @@ public class Utils {
                 .map(ArticleReference::new).collect(Collectors.toList());
     }
 
+    public static List<String> loadVocabularyFile() throws IOException {
+        return Files.readAllLines(Path.of(MIZFILES, MML_VCT));
+    }
+
     public static String removeComments(final String content) {
         return content.replaceAll("::.*", "");
+    }
+
+    public static Comparator<ArticleReference> getLexicalArticleComparator() {
+        return (o1, o2) -> {
+            if (o1 == o2) {
+                return 0;
+            }
+            if (o1 == null) {
+                return Integer.MIN_VALUE;
+            }
+            if (o2 == null) {
+                return Integer.MAX_VALUE;
+            }
+            return o1.getRefS().compareTo(o2.getRefS());
+        };
     }
 
 }

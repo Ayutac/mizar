@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Parser {
+public class ArticleParser {
 
     public static final Collection<String> END_STARTERS = Collections.unmodifiableCollection(Arrays.asList(
             "proof", "now", "hereby", "suppose", TextItem.DEFINITIONAL, TextItem.REGISTRATION, TextItem.NOTATION
