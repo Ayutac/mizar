@@ -1,5 +1,8 @@
 package org.abos.mizar.internal;
 
+import org.abos.mizar.parser.ParseException;
+import org.abos.mizar.parser.VocabularyParser;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -84,7 +87,7 @@ public final class Environ {
         return loaded;
     }
 
-    public void load() throws IOException {
+    public void load() throws IOException, ParseException, IllegalStateException {
         if (isLoaded()) {
             throw new IllegalStateException("Environ already loaded!");
         }
@@ -95,7 +98,11 @@ public final class Environ {
         vocabulary.get(VocabularySymbols.L).add("]");
         vocabulary.get(VocabularySymbols.K).add("{");
         vocabulary.get(VocabularySymbols.L).add("}");
-        // TODO load the rest in
+        // load in the rest
+        final var loadedVocabulary = new VocabularyParser().parse(getVocabularies());
+        for (VocabularySymbols symbol : VocabularySymbols.values()) {
+            vocabulary.get(symbol).addAll(loadedVocabulary.get(symbol));
+        }
         loaded = true;
     }
 
