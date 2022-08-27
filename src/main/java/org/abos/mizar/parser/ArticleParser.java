@@ -170,6 +170,9 @@ public class ArticleParser {
             }
         }
         textItems.add(new DefinitionalItem(parts));
+        if (defEnd.end() == remainder.length()) {
+            return "";
+        }
         return remainder.substring(defEnd.end()+1).trim();
     }
 
@@ -406,19 +409,22 @@ public class ArticleParser {
         int count = 1;
         while (count > 0) {
             // note that the positions of 'find()' in the ifs are extremely important and sensitive to changes
+            // if there are no more starters, we must find an end
             if (!startMatcher.find()) {
                 matchEnd = true;
             }
-            else if (startMatcher.start() < endMatcher.start()) {
+            // if there is another starter before the next end, increase count
+            if (!matchEnd && startMatcher.start() < endMatcher.start()) {
                 matchEnd = false;
                 count++;
             }
-            if (matchEnd && !endMatcher.find()) {
-                throw new ParseException("*214 Not enough 'end's but " + count + " are needed!");
-            }
+            // else the next starter is after the next end, decrease count
             else {
-                matchEnd = false;
                 count--;
+            }
+            // if we need to match an end, but there are no more left, throw parse exception
+            if (matchEnd && count > 0 && !endMatcher.find()) {
+                throw new ParseException("*214 Not enough 'end's but " + count + " more are needed!");
             }
         }
         return new Utils.IntPair(offset+endMatcher.start(), offset+endMatcher.end());
