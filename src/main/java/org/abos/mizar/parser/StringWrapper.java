@@ -42,9 +42,17 @@ public final class StringWrapper implements CharSequence {
         return this;
     }
 
+    public boolean startsWith(String str) {
+        return string.startsWith(str);
+    }
+
     public boolean startsWith(Pattern pattern) {
         Matcher matcher = pattern.matcher(string);
         return matcher.find() && matcher.start() == 0;
+    }
+
+    public int indexOf(int ch) {
+        return string.indexOf(ch);
     }
 
     public int indexOf(String str) {

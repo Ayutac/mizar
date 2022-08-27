@@ -135,7 +135,7 @@ public class ArticleParser {
     protected DefinitionalItem parseDefinitional(final StringWrapper remainder) throws ParseException {
         final List<DefinitionalPart> parts = new LinkedList<>();
         final Utils.IntPair defEnd = findEndIndex(remainder.getString(), TextItemType.DEFINITIONAL.getKeyword());
-        String excerpt = remainder.getString().substring(TextItemType.DEFINITIONAL.length(), defEnd.start()).trim();
+        StringWrapper excerpt = new StringWrapper(remainder.getString().substring(TextItemType.DEFINITIONAL.length(), defEnd.start()).trim());
         int sepIndex = -1;
         while (!excerpt.isEmpty()) {
             sepIndex = excerpt.indexOf(';');
@@ -143,12 +143,12 @@ public class ArticleParser {
                 throw new ParseException("Missing ';'!");
             }
             if (excerpt.startsWith("let")) {
-                parts.add(parseGeneralization(excerpt.substring(3, sepIndex).trim()));
-                excerpt = excerpt.substring(sepIndex+1).trim();
+                parts.add(parseGeneralization(excerpt.getString().substring(3, sepIndex).trim()));
+                excerpt.substring(sepIndex+1).trim();
             }
             else if (excerpt.startsWith("assume")) {
-                parts.add(parseAssumption(excerpt.substring(6, sepIndex)));
-                excerpt = excerpt.substring(sepIndex+1).trim();
+                parts.add(parseAssumption(excerpt.getString().substring(6, sepIndex).trim()));
+                excerpt.substring(sepIndex+1).trim();
             }
             // TODO parse auxiliary item
             else {
@@ -157,19 +157,19 @@ public class ArticleParser {
                     excerpt = excerpt.substring(Definition.REDEFINE.length()).trim();
                 }
                 if (excerpt.startsWith(Definition.ATTRIBUTE)) {
-                    excerpt = parseAttributeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts);
+                    parts.add(parseAttributeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.FUNCTOR)) {
-                    excerpt = parseFunctorDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts);
+                    parts.add(parseFunctorDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
                 }
                 else if (excerpt.startsWith(Definition.MODE)) {
-                    excerpt = parseModeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts);
+                    parts.add(parseModeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
                 }
                 else if (excerpt.startsWith(Definition.PREDICATE)) {
-                    excerpt = parsePredicateDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts);
+                    parts.add(parsePredicateDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
                 }
                 else if (excerpt.startsWith(Definition.STRUCTURE)) {
-                    excerpt = parseStructureDef(excerpt.substring(Definition.ATTRIBUTE.length()), parts);
+                    parts.add(parseStructureDef(excerpt.substring(Definition.ATTRIBUTE.length()), parts));
                 }
                 else {
                     throw new ParseException("Unknown definition type!");
@@ -185,81 +185,76 @@ public class ArticleParser {
         return new DefinitionalItem(parts);
     }
 
-    protected String parseAttributeDef(final String remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
-        String excerpt = remainder;
-        int sepIndex = excerpt.indexOf("is");
+    protected AttributeDefinition parseAttributeDef(final StringWrapper remainder, boolean redefine) throws ParseException {
+        int sepIndex = remainder.indexOf("is");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'is'!");
         }
-        final String attrVariable = excerpt.substring(0, sepIndex).trim();
-        excerpt = excerpt.substring(sepIndex+2).trim();
-        sepIndex = excerpt.indexOf("means");
+        final String attrVariable = remainder.getString().substring(0, sepIndex).trim();
+        remainder.substring(sepIndex+2).trim();
+        sepIndex = remainder.indexOf("means");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'means'!");
         }
-        final AttributePattern pattern = new AttributePattern(excerpt.substring(0,sepIndex).trim(), attrVariable);
-        excerpt = excerpt.substring(sepIndex+5).trim();
-        sepIndex = excerpt.indexOf(';');
+        final AttributePattern pattern = new AttributePattern(remainder.getString().substring(0,sepIndex).trim(), attrVariable);
+        remainder.substring(sepIndex+5).trim();
+        sepIndex = remainder.indexOf(';');
         if (sepIndex == -1) {
             throw new ParseException("Missing ';'");
         }
 
-        final Definiens definiens = parseDefiniens(excerpt.substring(0,sepIndex).trim());
-        excerpt = excerpt.substring(sepIndex+1).trim();
+        final Definiens definiens = parseDefiniens(remainder.getString().substring(0,sepIndex).trim());
+        remainder.substring(sepIndex+1).trim();
+        final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
+        return new AttributeDefinition(pattern, definiens, conditions, redefine);
+    }
+
+    protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+        // TODO implement
+        return null;
+    }
+
+    protected ModeDefinition parseModeDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+        // TODO implement
+        return null;
+    }
+
+    protected PredicateDefinition parsePredicateDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+        // TODO implement
+        return null;
+    }
+
+    protected StructureDefinition parseStructureDef(final StringWrapper remainder, List<DefinitionalPart> parts) throws ParseException {
+        // TODO implement
+        return null;
+    }
+
+    protected CorrectnessConditions parseCorrectnessConditions(final StringWrapper remainder) throws ParseException {
         final List<CorrectnessCondition> conditions = new LinkedList<>();
-        excerpt = parseAlmostAllCorrectnessConditions(excerpt, conditions);
-        // parse the correctness justification
-        Justification correctness = null;
-        if (excerpt.startsWith("correctness")) {
-            Utils.IntTriple justIndices = findJustificationIndices(excerpt);
-            if (justIndices.middle() != -1) {
-                correctness = parseJustification(excerpt.substring(justIndices.start()+5, justIndices.middle()));
-            }
-            excerpt = excerpt.substring(justIndices.end()+1);
-        }
-
-        parts.add(new AttributeDefinition(pattern, definiens, new CorrectnessConditions(conditions, correctness), redefine));
-        return excerpt;
-    }
-
-    protected String parseFunctorDef(final String remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
-        // TODO implement
-        return remainder;
-    }
-
-    protected String parseModeDef(final String remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
-        // TODO implement
-        return remainder;
-    }
-
-    protected String parsePredicateDef(final String remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
-        // TODO implement
-        return remainder;
-    }
-
-    protected String parseStructureDef(final String remainder, List<DefinitionalPart> parts) throws ParseException {
-        // TODO implement
-        return remainder;
-    }
-
-    protected String parseAlmostAllCorrectnessConditions(final String remainder, List<CorrectnessCondition> conditions) throws ParseException {
-        String excerpt = remainder;
         Matcher correctnessMatcher = null;
         while (true) {
-            correctnessMatcher = CORRECTNESS_TYPES_PATTERN.matcher(excerpt);
+            correctnessMatcher = CORRECTNESS_TYPES_PATTERN.matcher(remainder.getString());
             if (correctnessMatcher.find() && correctnessMatcher.start() == 0) {
-                excerpt = parseSpecificCorrectnessCondition(excerpt, conditions);
+                parseSpecificCorrectnessCondition(remainder, conditions);
             }
             else {
                 break;
             }
         }
-        return excerpt;
+        // parse the correctness justification
+        Justification correctness = null;
+        if (remainder.startsWith("correctness")) {
+            Utils.IntTriple justIndices = findJustificationIndices(remainder.getString());
+            if (justIndices.middle() != -1) {
+                correctness = parseJustification(remainder.getString().substring(justIndices.start()+5, justIndices.middle()));
+            }
+            remainder.substring(justIndices.end()+1);
+        }
+        return new CorrectnessConditions(conditions, correctness);
     }
 
-    protected String parseSpecificCorrectnessCondition(final String remainder, List<CorrectnessCondition> conditions) throws ParseException {
+    protected void parseSpecificCorrectnessCondition(final StringWrapper remainder, List<CorrectnessCondition> conditions) throws ParseException {
         // TODO implement
-        return remainder;
     }
 
     protected Definiens parseDefiniens(final String context) {
