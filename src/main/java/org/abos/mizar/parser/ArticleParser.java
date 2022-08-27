@@ -6,16 +6,20 @@ import org.abos.mizar.internal.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class ArticleParser {
 
-    public static final Collection<String> END_STARTERS = Collections.unmodifiableCollection(Arrays.asList(
-            "proof", "now", "hereby", "suppose", TextItem.DEFINITIONAL, TextItem.REGISTRATION, TextItem.NOTATION
-    ));
+    public static final Collection<String> END_STARTERS = Stream.concat(
+            Arrays.stream(TextItemType.values()).map(TextItemType::getKeyword),
+            Stream.of("proof", "now", "hereby", "suppose")
+    ).toList();
 
-    public static final Pattern END_STARTERS_PATTERN = Pattern.compile(String.join("|", END_STARTERS));
+    public static final Pattern END_STARTERS_PATTERN = Pattern.compile(String.join("|", END_STARTERS)+"\\s");
 
     public static final Pattern END_PATTERN = Pattern.compile("end\\s*;");
+
+    public static final Pattern BEGIN_PATTERN = Pattern.compile("begin\\s");
 
     public static final Pattern LABEL_PATTERN = Pattern.compile("[A-Za-z]\\w*:");
 
@@ -25,30 +29,32 @@ public class ArticleParser {
 
     public Article parse(final String name, final String content) throws ParseException {
         final ArticleReference artName = new ArticleReference(name);
-        String remainder = Utils.removeComments(content);
+        StringWrapper remainder = new StringWrapper(Utils.removeComments(content));
         int firstBeginIndex = remainder.indexOf("begin");
         if (firstBeginIndex == -1) {
             throw new ParseException("No 'begin' in article!");
         }
-        final Environ environ = parseEnviron(remainder.substring(0, firstBeginIndex).trim());
-        List<TextItem> textItems = new LinkedList<>();
-        remainder = remainder.substring(firstBeginIndex+5).trim();
+        final Environ environ = parseEnviron(remainder.getString().substring(0, firstBeginIndex).trim());
+        final List<TextItem> textItems = new LinkedList<>();
+        remainder.substring(firstBeginIndex+5).trim();
         while (!remainder.isEmpty()) {
-            if (remainder.startsWith("begin")) {
-                remainder = remainder.substring(5);
+            if (remainder.startsWith(BEGIN_PATTERN)) {
+                remainder.substring(5);
             }
-            else if (remainder.startsWith(TextItem.RESERVATION)) {
-                remainder = parseReservation(remainder.substring(TextItem.RESERVATION.length()).trim(), textItems);
+            else if (remainder.startsWith(TextItemType.RESERVATION.getPattern())) {
+                // remove 'reserve'
+                textItems.add(parseReservation(remainder.substring(TextItemType.RESERVATION.length()).trim()));
             }
-            else if (remainder.startsWith(TextItem.THEOREM)) {
-                remainder = parseCompactStatement(remainder.substring(TextItem.THEOREM.length()).trim(), true, textItems);
+            else if (remainder.startsWith(TextItemType.THEOREM.getPattern())) {
+                // remove 'theorem'
+                textItems.add(parseCompactStatement(remainder.substring(TextItemType.THEOREM.length()).trim(), true));
             }
-            else if (remainder.startsWith(TextItem.DEFINITIONAL)) {
-                remainder = parseDefinitional(remainder, textItems);
+            else if (remainder.startsWith(TextItemType.DEFINITIONAL.getPattern())) {
+                textItems.add(parseDefinitional(remainder));
             }
             // TODO parse remaining text items
             else {
-                throw new ParseException("Unkown remainder!");
+                throw new ParseException("Unknown remainder!");
             }
         }
         return new Article(artName, environ, textItems);
@@ -92,19 +98,20 @@ public class ArticleParser {
         return new Environ(entries);
     }
 
-    protected String parseReservation(final String remainder, final List<TextItem> textItems) throws ParseException {
-        int endIndex = remainder.indexOf(';');
+    protected Reservation parseReservation(final StringWrapper remainder) throws ParseException {
+        String excerpt = remainder.getString();
+        int endIndex = excerpt.indexOf(';');
         if (endIndex == -1) {
-            throw new ParseException("No end of '" + TextItem.RESERVATION + "'!");
+            throw new ParseException("No end of '" + TextItemType.RESERVATION.getKeyword() + "'!");
         }
-        textItems.add(new Reservation(parseTypeListings(remainder.substring(0, endIndex).trim(), "for")));
-        return remainder.substring(endIndex+1).trim();
+        remainder.substring(endIndex+1).trim();
+        return new Reservation(parseTypeListings(excerpt.substring(0, endIndex).trim(), "for"));
     }
 
-    protected String parseCompactStatement(final String remainder, boolean theorem, final List<TextItem> textItems) throws ParseException {
-        Utils.IntTriple justificationIndices = findJustificationIndices(remainder);
+    protected CompactStatement parseCompactStatement(final StringWrapper remainder, boolean theorem) throws ParseException {
+        Utils.IntTriple justificationIndices = findJustificationIndices(remainder.getString());
         // parse the label
-        String propositionStr = remainder.substring(0, justificationIndices.start());
+        String propositionStr = remainder.getString().substring(0, justificationIndices.start());
         String formula = propositionStr;
         String label = null;
         Matcher labelMatcher = LABEL_PATTERN.matcher(propositionStr);
@@ -119,16 +126,16 @@ public class ArticleParser {
         // parse the justification
         Justification just = null;
         if (justificationIndices.middle() != -1) {
-            just = parseJustification(remainder.substring(justificationIndices.start()+5, justificationIndices.middle()));
+            just = parseJustification(remainder.getString().substring(justificationIndices.start()+5, justificationIndices.middle()));
         }
-        textItems.add(new CompactStatement(proposition, just, theorem));
-        return remainder.substring(justificationIndices.end()).trim();
+        remainder.substring(justificationIndices.end()).trim();
+        return new CompactStatement(proposition, just, theorem);
     }
 
-    protected String parseDefinitional(final String remainder, final List<TextItem> textItems) throws ParseException {
+    protected DefinitionalItem parseDefinitional(final StringWrapper remainder) throws ParseException {
         final List<DefinitionalPart> parts = new LinkedList<>();
-        final Utils.IntPair defEnd = findEndIndex(remainder, TextItem.DEFINITIONAL);
-        String excerpt = remainder.substring(TextItem.DEFINITIONAL.length(), defEnd.start()).trim();
+        final Utils.IntPair defEnd = findEndIndex(remainder.getString(), TextItemType.DEFINITIONAL.getKeyword());
+        String excerpt = remainder.getString().substring(TextItemType.DEFINITIONAL.length(), defEnd.start()).trim();
         int sepIndex = -1;
         while (!excerpt.isEmpty()) {
             sepIndex = excerpt.indexOf(';');
@@ -169,11 +176,13 @@ public class ArticleParser {
                 }
             }
         }
-        textItems.add(new DefinitionalItem(parts));
         if (defEnd.end() == remainder.length()) {
-            return "";
+            remainder.setString("");
         }
-        return remainder.substring(defEnd.end()+1).trim();
+        else {
+            remainder.substring(defEnd.end()+1).trim();
+        }
+        return new DefinitionalItem(parts);
     }
 
     protected String parseAttributeDef(final String remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
@@ -194,20 +203,12 @@ public class ArticleParser {
         if (sepIndex == -1) {
             throw new ParseException("Missing ';'");
         }
+
         final Definiens definiens = parseDefiniens(excerpt.substring(0,sepIndex).trim());
         excerpt = excerpt.substring(sepIndex+1).trim();
-        List<CorrectnessCondition> conditions = new LinkedList<>();
-        Matcher correctnessMatcher = null;
-        while (true) {
-            correctnessMatcher = CORRECTNESS_TYPES_PATTERN.matcher(excerpt);
-            if (correctnessMatcher.find() && correctnessMatcher.start() == 0) {
-                excerpt = parseSpecificCorrectnessCondition(excerpt, conditions);
-            }
-            else {
-                break;
-            }
-        }
-        // parse the justification
+        final List<CorrectnessCondition> conditions = new LinkedList<>();
+        excerpt = parseAlmostAllCorrectnessConditions(excerpt, conditions);
+        // parse the correctness justification
         Justification correctness = null;
         if (excerpt.startsWith("correctness")) {
             Utils.IntTriple justIndices = findJustificationIndices(excerpt);
@@ -216,6 +217,7 @@ public class ArticleParser {
             }
             excerpt = excerpt.substring(justIndices.end()+1);
         }
+
         parts.add(new AttributeDefinition(pattern, definiens, new CorrectnessConditions(conditions, correctness), redefine));
         return excerpt;
     }
@@ -238,6 +240,21 @@ public class ArticleParser {
     protected String parseStructureDef(final String remainder, List<DefinitionalPart> parts) throws ParseException {
         // TODO implement
         return remainder;
+    }
+
+    protected String parseAlmostAllCorrectnessConditions(final String remainder, List<CorrectnessCondition> conditions) throws ParseException {
+        String excerpt = remainder;
+        Matcher correctnessMatcher = null;
+        while (true) {
+            correctnessMatcher = CORRECTNESS_TYPES_PATTERN.matcher(excerpt);
+            if (correctnessMatcher.find() && correctnessMatcher.start() == 0) {
+                excerpt = parseSpecificCorrectnessCondition(excerpt, conditions);
+            }
+            else {
+                break;
+            }
+        }
+        return excerpt;
     }
 
     protected String parseSpecificCorrectnessCondition(final String remainder, List<CorrectnessCondition> conditions) throws ParseException {
