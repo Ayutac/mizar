@@ -69,7 +69,7 @@ public class ArticleParser {
         return new Article(artName, environ.get(), textItems);
     }
 
-    protected Environ parseEnviron(final String environContent) throws ParseException{
+    protected Environ parseEnviron(final String environContent) throws ParseException {
         if (!environContent.startsWith("environ")) {
             throw new ParseException("Article doesn't start with 'environ'!");
         }
@@ -229,11 +229,66 @@ public class ArticleParser {
     }
 
     protected PredicateDefinition parsePredicateDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+        int sepIndex = remainder.indexOf("means");
+        if (sepIndex == -1) {
+            throw new ParseException("Missing 'means'!");
+        }
+        final PredicatePattern pattern = parsePredicatePattern(remainder.getString().substring(0, sepIndex).trim());
+        remainder.substring(sepIndex+5).trim();
+        final Definiens definiens = parseDefiniens(remainder.getString().substring(0,sepIndex).trim());
+        remainder.substring(sepIndex+1).trim();
+        final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
+        final List<PredicateProperty> properties = new LinkedList<>();
+        // TODO parse predicate properties
+        return new PredicateDefinition(pattern, definiens, conditions, properties, redefine);
+    }
+
+    protected PredicatePattern parsePredicatePattern(final String context) throws ParseException, IllegalStateException {
+        String[] parts = context.split(" ");
+        String candidate = null;
+        String predicate = null;
+        try {
+            for (final String part : parts) {
+                candidate = part.trim();
+                if (environ.get().isValidSymbol(candidate, VocabularySymbols.R)) {
+                    predicate = candidate;
+                    break;
+                }
+            }
+        }
+        catch (ExecutionException | InterruptedException ex) {
+            throw new IllegalArgumentException("environ wasn't loaded properly!", ex);
+        }
+        if (predicate == null) {
+            throw new ParseException("Predicate symbol expected!");
+        }
+        int index = context.indexOf(predicate);
+        String lociRaw = context.substring(0, index);
+        List<String> prefixes;
+        if (index != 0) {
+            prefixes = Arrays.stream(lociRaw.split(",")).map(String::trim).toList();
+        }
+        else {
+            prefixes = Collections.emptyList();
+        }
+        index += predicate.length();
+        List<String> suffixes;
+        if (index != context.length()) {
+            lociRaw = context.substring(index+1);
+            suffixes = Arrays.stream(lociRaw.split(",")).map(String::trim).toList();
+        }
+        else {
+            suffixes = Collections.emptyList();
+        }
+        return new PredicatePattern(predicate, prefixes, suffixes);
+    }
+
+    protected StructureDefinition parseStructureDef(final StringWrapper remainder, List<DefinitionalPart> parts) throws ParseException {
         // TODO implement
         return null;
     }
 
-    protected StructureDefinition parseStructureDef(final StringWrapper remainder, List<DefinitionalPart> parts) throws ParseException {
+    protected Definiens parseDefiniens(final String context) {
         // TODO implement
         return null;
     }
@@ -264,11 +319,6 @@ public class ArticleParser {
 
     protected void parseSpecificCorrectnessCondition(final StringWrapper remainder, List<CorrectnessCondition> conditions) throws ParseException {
         // TODO implement
-    }
-
-    protected Definiens parseDefiniens(final String context) {
-        // TODO implement
-        return null;
     }
 
     protected Generalization parseGeneralization(final String context) throws ParseException {
