@@ -4,6 +4,7 @@ import org.abos.mizar.Utils;
 import org.abos.mizar.internal.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -27,14 +28,22 @@ public class ArticleParser {
 
     public static final Pattern CORRECTNESS_TYPES_PATTERN = Pattern.compile(String.join("|", CORRECTNESS_TYPES));
 
-    public Article parse(final String name, final String content) throws ParseException {
+    protected Future<Environ> environ;
+
+    public Article parse(final String name, final String content) throws ParseException, ExecutionException, InterruptedException {
         final ArticleReference artName = new ArticleReference(name);
-        StringWrapper remainder = new StringWrapper(Utils.removeComments(content));
-        int firstBeginIndex = remainder.indexOf("begin");
+        final StringWrapper remainder = new StringWrapper(Utils.removeComments(content));
+        final int firstBeginIndex = remainder.indexOf("begin");
         if (firstBeginIndex == -1) {
             throw new ParseException("No 'begin' in article!");
         }
-        final Environ environ = parseEnviron(remainder.getString().substring(0, firstBeginIndex).trim());
+        final String environPlusStr = remainder.getString();
+        environ = Executors.newSingleThreadExecutor().submit(() -> {
+                Environ e = parseEnviron(environPlusStr.substring(0, firstBeginIndex).trim());
+                e.load();
+                return e;
+        });
+
         final List<TextItem> textItems = new LinkedList<>();
         remainder.substring(firstBeginIndex+5).trim();
         while (!remainder.isEmpty()) {
@@ -57,7 +66,7 @@ public class ArticleParser {
                 throw new ParseException("Unknown remainder!");
             }
         }
-        return new Article(artName, environ, textItems);
+        return new Article(artName, environ.get(), textItems);
     }
 
     protected Environ parseEnviron(final String environContent) throws ParseException{

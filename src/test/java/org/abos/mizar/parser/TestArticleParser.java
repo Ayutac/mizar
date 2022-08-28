@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class TestArticleParser {
 
     @Test
-    public void testEmptyArticle() throws IOException, ParseException {
+    public void testEmptyArticle() throws Exception {
         String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticle.miz");
         Article emptyArticle = new ArticleParser().parse("EMPTY", emptyArticleStr);
         Assertions.assertTrue(emptyArticle.getEnviron().getVocabularies().isEmpty());
@@ -30,7 +30,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testEmptyArticleWrong() throws IOException {
+    public void testEmptyArticleWrong() throws Exception {
         String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleWrongOrder.miz");
         try {
             new ArticleParser().parse("EMPTY", emptyArticleStr);
@@ -41,18 +41,19 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testEmptyArticleNoEnviron() throws IOException {
+    public void testEmptyArticleNoEnviron() throws Exception {
         String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleNoEnviron.miz");
         try {
             new ArticleParser().parse("EMPTY", emptyArticleStr);
-            Assertions.fail("Missing 'environ' must cause a ParserException!");
-        } catch (ParseException ex) {
+            Assertions.fail("Missing 'environ' must cause a wrapped ParserException!");
+        } catch (ExecutionException ex) {
             // expected
+            Assertions.assertInstanceOf(ParseException.class, ex.getCause());
         }
     }
 
     @Test
-    public void testEmptyArticleNoBegin() throws IOException {
+    public void testEmptyArticleNoBegin() throws Exception {
         String emptyArticleStr = Utils.loadFromResource("/fixtures/articles/emptyArticleNoBegin.miz");
         try {
             new ArticleParser().parse("EMPTY", emptyArticleStr);
@@ -63,7 +64,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testReservationArticle() throws IOException, ParseException {
+    public void testReservationArticle() throws Exception {
         String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticle.miz");
         Article resArticle = new ArticleParser().parse("RES", resArticleStr);
         Assertions.assertEquals(4, resArticle.getTextItems().size());
@@ -71,7 +72,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testReservationArticleMissingFor() throws IOException  {
+    public void testReservationArticleMissingFor() throws Exception  {
         String resArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingFor.miz");
         try {
             new ArticleParser().parse("RES", resArticleStr);
@@ -82,7 +83,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testReservationArticleMissingAttr() throws IOException  {
+    public void testReservationArticleMissingAttr() throws Exception  {
         String reservationArticleStr = Utils.loadFromResource("/fixtures/articles/reservationArticleMissingAttr.miz");
         try {
             new ArticleParser().parse("RES", reservationArticleStr);
@@ -93,7 +94,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testDefinitionAttrArticle() throws IOException, ParseException {
+    public void testDefinitionAttrArticle() throws Exception {
         String attrArticleStr = Utils.loadFromResource("/fixtures/articles/definitionAttrArticle.miz");
         Article attrArticle = new ArticleParser().parse("THS", attrArticleStr);
         Assertions.assertEquals(2, attrArticle.getTextItems().size());
@@ -105,7 +106,7 @@ public class TestArticleParser {
     }
 
     @Test
-    public void testTheoremArticle() throws IOException, ParseException {
+    public void testTheoremArticle() throws Exception {
         String thsArticleStr = Utils.loadFromResource("/fixtures/articles/theoremArticle.miz");
         Article thsArticle = new ArticleParser().parse("THS", thsArticleStr);
         Assertions.assertEquals(3, thsArticle.getTextItems().size());
@@ -114,7 +115,7 @@ public class TestArticleParser {
 
     @Disabled
     @Test
-    public void testTarski() throws IOException, ParseException {
+    public void testTarski() throws Exception {
         String tarskiStr = Utils.loadFromMizar("/mml/tarski.miz");
         Article tarski = new ArticleParser().parse("TARSKI", tarskiStr);
 
@@ -133,7 +134,7 @@ public class TestArticleParser {
 
     @Disabled
     @Test
-    public void testXboole0() throws IOException, ParseException {
+    public void testXboole0() throws Exception {
         String xboole0Str = Utils.loadFromMizar("/mml/xboole_0.miz");
         Article xboole0 = new ArticleParser().parse("XBOOLE_0", xboole0Str);
         ArticleReference tarski = new ArticleReference("TARSKI");
