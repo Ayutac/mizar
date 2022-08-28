@@ -26,6 +26,8 @@ public class ArticleParser {
 
     public static final Pattern MEANS_EQUALS_PATTERN = Pattern.compile("\\s(means|equals)\\s");
 
+    public static final Pattern MEANS_IS_PATTERN = Pattern.compile("\\s(means|is)\\s");
+
     public static final Collection<String> CORRECTNESS_TYPES = Arrays.stream(CorrectnessConditionType.values()).map(CorrectnessConditionType::getName).toList();
 
     public static final Pattern CORRECTNESS_TYPES_PATTERN = Pattern.compile(String.join("|", CORRECTNESS_TYPES));
@@ -251,7 +253,7 @@ public class ArticleParser {
         remainder.substring(sepIndex+1).trim();
         final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
         final List<FunctorProperty> properties = new LinkedList<>();
-        // TODO parse function properties
+        // TODO parse functor properties
         return new FunctorDefinition(pattern, specification, matcher.group().contains("equals"), definiens, conditions, properties, redefine);
     }
 
@@ -261,6 +263,50 @@ public class ArticleParser {
     }
 
     protected ModeDefinition parseModeDef(final StringWrapper remainder, boolean redefine) throws ParseException {
+        int sepIndex = remainder.indexOf(';');
+        if (sepIndex == -1) {
+            throw new ParseException("Missing ';'");
+        }
+        String excerpt = remainder.getString().substring(0, sepIndex).trim();
+        remainder.substring(sepIndex+1).trim();
+        sepIndex = excerpt.indexOf("is");
+        if (sepIndex == -1) {
+            // means mode
+            sepIndex = excerpt.indexOf("means");
+            final Definiens definiens;
+            if (sepIndex != -1) {
+                definiens = parseDefiniens(excerpt.substring(sepIndex+5).trim());
+                excerpt = excerpt.substring(0, sepIndex);
+            }
+            else {
+                definiens = null;
+            }
+            // now excerpt would end after specification if there is one
+            sepIndex = excerpt.indexOf("->");
+            final TypeExpression specification;
+            if (sepIndex != -1) {
+                specification = parseTypeExpression(excerpt.substring(sepIndex+2).trim());
+                excerpt = excerpt.substring(sepIndex).trim();
+            }
+            else {
+                specification = null;
+            }
+            // now excerpt only contains the mode pattern
+            final ModePattern pattern = parseModePattern(excerpt);
+            final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
+            // TODO parse mode properties
+            return new ModeDefinitionMeans(pattern, specification, definiens, conditions, null, redefine);
+        }
+        else {
+            // is mode
+            final ModePattern pattern = parseModePattern(excerpt.substring(0, sepIndex));
+            final TypeExpression expr = parseTypeExpression(excerpt.substring(sepIndex+2).trim());
+            // TODO parse mode properties
+            return new ModeDefinitionIs(pattern, expr, null);
+        }
+    }
+
+    protected ModePattern parseModePattern(final String content) {
         // TODO implement
         return null;
     }

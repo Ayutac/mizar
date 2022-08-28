@@ -1,0 +1,16 @@
+environ
+
+  vocabularies XBOOLE_0, SUBSET_1, RELAT_1;
+
+begin
+
+definition
+  mode Relation is Relation-like set;
+end;
+
+definition
+  let X be set;
+  mode Element of X -> set means
+  it in X if X is non empty otherwise it is empty;
+  ::sethood;
+end;

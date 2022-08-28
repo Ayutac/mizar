@@ -121,6 +121,18 @@ public class TestArticleParser {
     }
 
     @Test
+    public void testDefinitionModeArticle() throws Exception {
+        String modeArticleStr = Utils.loadFromResource("/fixtures/articles/definitionModeArticle.miz");
+        Article modeArticle = new ArticleParser().parse("MODE", modeArticleStr);
+        Assertions.assertEquals(2, modeArticle.getTextItems().size());
+        DefinitionalItem definitional = (DefinitionalItem)modeArticle.getTextItems().get(0);
+        Assertions.assertEquals(1, definitional.parts().size());
+        definitional = (DefinitionalItem)modeArticle.getTextItems().get(1);
+        Assertions.assertEquals(2, definitional.parts().size());
+        // TODO more content assertions
+    }
+
+    @Test
     public void testDefinitionPredArticle() throws Exception {
         String predArticleStr = Utils.loadFromResource("/fixtures/articles/definitionPredArticle.miz");
         Article predArticle = new ArticleParser().parse("PRED", predArticleStr);
