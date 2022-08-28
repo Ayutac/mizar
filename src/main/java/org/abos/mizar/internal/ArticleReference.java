@@ -37,4 +37,9 @@ public class ArticleReference {
     public int hashCode() {
         return Objects.hash(refS);
     }
+
+    @Override
+    public String toString() {
+        return "ArticleReference[" + refS + ']';
+    }
 }
