@@ -163,22 +163,22 @@ public class ArticleParser {
             else {
                 boolean redefine = excerpt.startsWith(Definition.REDEFINE);
                 if (redefine) {
-                    excerpt = excerpt.substring(Definition.REDEFINE.length()).trim();
+                    excerpt.substring(Definition.REDEFINE.length()).trim();
                 }
                 if (excerpt.startsWith(Definition.ATTRIBUTE)) {
                     parts.add(parseAttributeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.FUNCTOR)) {
-                    parts.add(parseFunctorDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
+                    parts.add(parseFunctorDef(excerpt.substring(Definition.FUNCTOR.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.MODE)) {
-                    parts.add(parseModeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
+                    parts.add(parseModeDef(excerpt.substring(Definition.MODE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.PREDICATE)) {
-                    parts.add(parsePredicateDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
+                    parts.add(parsePredicateDef(excerpt.substring(Definition.PREDICATE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.STRUCTURE)) {
-                    parts.add(parseStructureDef(excerpt.substring(Definition.ATTRIBUTE.length())));
+                    parts.add(parseStructureDef(excerpt.substring(Definition.STRUCTURE.length())));
                 }
                 else {
                     throw new ParseException("Unknown definition type!");
@@ -266,7 +266,7 @@ public class ArticleParser {
             throw new IllegalArgumentException("environ wasn't loaded properly!", ex);
         }
         if (predicate == null) {
-            throw new ParseException("Predicate symbol expected!");
+            throw new ParseException("Predicate symbol expected in '"+context+"'!");
         }
         int index = context.indexOf(predicate);
         String lociRaw = context.substring(0, index);
