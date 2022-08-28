@@ -169,16 +169,16 @@ public class ArticleParser {
                     parts.add(parseAttributeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.FUNCTOR)) {
-                    parts.add(parseFunctorDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
+                    parts.add(parseFunctorDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.MODE)) {
-                    parts.add(parseModeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
+                    parts.add(parseModeDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.PREDICATE)) {
-                    parts.add(parsePredicateDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine, parts));
+                    parts.add(parsePredicateDef(excerpt.substring(Definition.ATTRIBUTE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.STRUCTURE)) {
-                    parts.add(parseStructureDef(excerpt.substring(Definition.ATTRIBUTE.length()), parts));
+                    parts.add(parseStructureDef(excerpt.substring(Definition.ATTRIBUTE.length())));
                 }
                 else {
                     throw new ParseException("Unknown definition type!");
@@ -194,7 +194,8 @@ public class ArticleParser {
         return new DefinitionalItem(parts);
     }
 
-    protected AttributeDefinition parseAttributeDef(final StringWrapper remainder, boolean redefine) throws ParseException {int sepIndex = remainder.indexOf("means");
+    protected AttributeDefinition parseAttributeDef(final StringWrapper remainder, boolean redefine) throws ParseException {
+        int sepIndex = remainder.indexOf("means");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'means'!");
         }
@@ -219,23 +220,27 @@ public class ArticleParser {
         return new AttributePattern(context.substring(sepIndex+2).trim(), attrVariable);
     }
 
-    protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+    protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine) throws ParseException {
         // TODO implement
         return null;
     }
 
-    protected ModeDefinition parseModeDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+    protected ModeDefinition parseModeDef(final StringWrapper remainder, boolean redefine) throws ParseException {
         // TODO implement
         return null;
     }
 
-    protected PredicateDefinition parsePredicateDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
+    protected PredicateDefinition parsePredicateDef(final StringWrapper remainder, boolean redefine) throws ParseException {
         int sepIndex = remainder.indexOf("means");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'means'!");
         }
         final PredicatePattern pattern = parsePredicatePattern(remainder.getString().substring(0, sepIndex).trim());
         remainder.substring(sepIndex+5).trim();
+        sepIndex = remainder.indexOf(';');
+        if (sepIndex == -1) {
+            throw new ParseException("Missing ';'");
+        }
         final Definiens definiens = parseDefiniens(remainder.getString().substring(0,sepIndex).trim());
         remainder.substring(sepIndex+1).trim();
         final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
@@ -284,7 +289,7 @@ public class ArticleParser {
         return new PredicatePattern(predicate, prefixes, suffixes);
     }
 
-    protected StructureDefinition parseStructureDef(final StringWrapper remainder, List<DefinitionalPart> parts) throws ParseException {
+    protected StructureDefinition parseStructureDef(final StringWrapper remainder) throws ParseException {
         // TODO implement
         return null;
     }
@@ -487,7 +492,6 @@ public class ArticleParser {
             }
             // if there is another starter before the next end, increase count
             if (!matchEnd && startMatcher.start() < endMatcher.start()) {
-                matchEnd = false;
                 count++;
             }
             // else the next starter is after the next end, decrease count

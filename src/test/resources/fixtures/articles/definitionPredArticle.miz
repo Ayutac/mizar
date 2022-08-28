@@ -1,0 +1,20 @@
+environ
+
+  vocabularies RELAT_1, ORDERS_1;
+
+begin
+
+definition
+  let R Relation, x be set;
+  pred x is_maximal_in R means
+  x in field R & not ex y being set st y in field R & y <> x & [x,y] in R;
+  pred x is_minimal_in R means
+  x in field R & not ex y being object st y in field R & y <> x & [y,x] in R;
+end;
+
+definition
+  let R be Relation;
+  let x be set;
+  pred x is_superior_of R means
+  x in field R & for y being object st y in field R & y <> x holds [y,x] in R;
+end;

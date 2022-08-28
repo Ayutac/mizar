@@ -96,12 +96,24 @@ public class TestArticleParser {
     @Test
     public void testDefinitionAttrArticle() throws Exception {
         String attrArticleStr = Utils.loadFromResource("/fixtures/articles/definitionAttrArticle.miz");
-        Article attrArticle = new ArticleParser().parse("THS", attrArticleStr);
+        Article attrArticle = new ArticleParser().parse("ATTR", attrArticleStr);
         Assertions.assertEquals(2, attrArticle.getTextItems().size());
         DefinitionalItem definitional = (DefinitionalItem)attrArticle.getTextItems().get(0);
         Assertions.assertEquals(3, definitional.parts().size());
         definitional = (DefinitionalItem)attrArticle.getTextItems().get(1);
         Assertions.assertEquals(2, definitional.parts().size());
+        // TODO more content assertions
+    }
+
+    @Test
+    public void testDefinitionPredArticle() throws Exception {
+        String predArticleStr = Utils.loadFromResource("/fixtures/articles/definitionPredArticle.miz");
+        Article predArticle = new ArticleParser().parse("PRED", predArticleStr);
+        Assertions.assertEquals(2, predArticle.getTextItems().size());
+        DefinitionalItem definitional = (DefinitionalItem)predArticle.getTextItems().get(0);
+        Assertions.assertEquals(3, definitional.parts().size());
+        definitional = (DefinitionalItem)predArticle.getTextItems().get(1);
+        Assertions.assertEquals(3, definitional.parts().size());
         // TODO more content assertions
     }
 
