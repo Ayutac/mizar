@@ -194,28 +194,29 @@ public class ArticleParser {
         return new DefinitionalItem(parts);
     }
 
-    protected AttributeDefinition parseAttributeDef(final StringWrapper remainder, boolean redefine) throws ParseException {
-        int sepIndex = remainder.indexOf("is");
-        if (sepIndex == -1) {
-            throw new ParseException("Missing 'is'!");
-        }
-        final String attrVariable = remainder.getString().substring(0, sepIndex).trim();
-        remainder.substring(sepIndex+2).trim();
-        sepIndex = remainder.indexOf("means");
+    protected AttributeDefinition parseAttributeDef(final StringWrapper remainder, boolean redefine) throws ParseException {int sepIndex = remainder.indexOf("means");
         if (sepIndex == -1) {
             throw new ParseException("Missing 'means'!");
         }
-        final AttributePattern pattern = new AttributePattern(remainder.getString().substring(0,sepIndex).trim(), attrVariable);
+        final AttributePattern pattern = parseAttributePattern(remainder.getString().substring(0, sepIndex).trim());
         remainder.substring(sepIndex+5).trim();
         sepIndex = remainder.indexOf(';');
         if (sepIndex == -1) {
             throw new ParseException("Missing ';'");
         }
-
         final Definiens definiens = parseDefiniens(remainder.getString().substring(0,sepIndex).trim());
         remainder.substring(sepIndex+1).trim();
         final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
         return new AttributeDefinition(pattern, definiens, conditions, redefine);
+    }
+
+    protected AttributePattern parseAttributePattern(final String context) throws ParseException, IllegalStateException {
+        int sepIndex = context.indexOf("is");
+        if (sepIndex == -1) {
+            throw new ParseException("Missing 'is'!");
+        }
+        final String attrVariable = context.substring(0, sepIndex).trim();
+        return new AttributePattern(context.substring(sepIndex+2).trim(), attrVariable);
     }
 
     protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine, List<DefinitionalPart> parts) throws ParseException {
