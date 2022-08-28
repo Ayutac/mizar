@@ -1,0 +1,20 @@
+environ
+
+  vocabularies HIDDEN;
+begin
+
+
+
+definition let y be object;
+  func { y } -> set means
+    for x being object holds x in it iff x = y;
+  let z be object;
+  func { y, z } -> set means
+    for x being object holds x in it iff x = y or x = z;
+  ::commutativity;
+end;
+
+definition let x,y be object;
+  func [x,y] -> object equals
+    { { x,y }, { x } };
+end;

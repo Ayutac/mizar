@@ -24,6 +24,8 @@ public class ArticleParser {
 
     public static final Pattern LABEL_PATTERN = Pattern.compile("[A-Za-z]\\w*:");
 
+    public static final Pattern MEANS_EQUALS_PATTERN = Pattern.compile("\\s(means|equals)\\s");
+
     public static final Collection<String> CORRECTNESS_TYPES = Arrays.stream(CorrectnessConditionType.values()).map(CorrectnessConditionType::getName).toList();
 
     public static final Pattern CORRECTNESS_TYPES_PATTERN = Pattern.compile(String.join("|", CORRECTNESS_TYPES));
@@ -224,6 +226,36 @@ public class ArticleParser {
     }
 
     protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine) throws ParseException {
+        final Matcher matcher = MEANS_EQUALS_PATTERN.matcher(remainder);
+        if (!matcher.find()) {
+            throw new ParseException("Missing 'means' or 'equals' for functor definition!");
+        }
+        String excerpt = remainder.getString().substring(0, matcher.start());
+        int sepIndex = excerpt.indexOf("->");
+        final TypeExpression specification;
+        if (sepIndex == -1) {
+            specification = null;
+            sepIndex = matcher.start();
+        }
+        else {
+            specification = parseTypeExpression(excerpt.substring(sepIndex+2).trim());
+        }
+        // now sepIndex is directly after the functor pattern
+        final FunctorPattern pattern = parseFunctorPattern(excerpt.substring(0, sepIndex).trim());
+        remainder.substring(matcher.end()+1).trim();
+        sepIndex = remainder.indexOf(';');
+        if (sepIndex == -1) {
+            throw new ParseException("Missing ';'");
+        }
+        final Definiens definiens = parseDefiniens(remainder.getString().substring(0,sepIndex).trim());
+        remainder.substring(sepIndex+1).trim();
+        final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
+        final List<FunctorProperty> properties = new LinkedList<>();
+        // TODO parse function properties
+        return new FunctorDefinition(pattern, specification, matcher.end()- matcher.start() == 5, definiens, conditions, properties, redefine);
+    }
+
+    protected FunctorPattern parseFunctorPattern(final String content) {
         // TODO implement
         return null;
     }
