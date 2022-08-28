@@ -226,7 +226,7 @@ public class ArticleParser {
     }
 
     protected FunctorDefinition parseFunctorDef(final StringWrapper remainder, boolean redefine) throws ParseException {
-        final Matcher matcher = MEANS_EQUALS_PATTERN.matcher(remainder);
+        final Matcher matcher = MEANS_EQUALS_PATTERN.matcher(remainder.getString());
         if (!matcher.find()) {
             throw new ParseException("Missing 'means' or 'equals' for functor definition!");
         }
@@ -252,7 +252,7 @@ public class ArticleParser {
         final CorrectnessConditions conditions = parseCorrectnessConditions(remainder);
         final List<FunctorProperty> properties = new LinkedList<>();
         // TODO parse function properties
-        return new FunctorDefinition(pattern, specification, matcher.end()- matcher.start() == 5, definiens, conditions, properties, redefine);
+        return new FunctorDefinition(pattern, specification, matcher.group().contains("equals"), definiens, conditions, properties, redefine);
     }
 
     protected FunctorPattern parseFunctorPattern(final String content) {

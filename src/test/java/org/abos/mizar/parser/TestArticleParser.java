@@ -4,6 +4,7 @@ import org.abos.mizar.Utils;
 import org.abos.mizar.internal.Article;
 import org.abos.mizar.internal.ArticleReference;
 import org.abos.mizar.internal.DefinitionalItem;
+import org.abos.mizar.internal.FunctorDefinition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -112,8 +113,10 @@ public class TestArticleParser {
         Assertions.assertEquals(2, funcArticle.getTextItems().size());
         DefinitionalItem definitional = (DefinitionalItem)funcArticle.getTextItems().get(0);
         Assertions.assertEquals(4, definitional.parts().size());
+        Assertions.assertFalse(((FunctorDefinition)(definitional.parts().get(1))).equals());
         definitional = (DefinitionalItem)funcArticle.getTextItems().get(1);
         Assertions.assertEquals(2, definitional.parts().size());
+        Assertions.assertTrue(((FunctorDefinition)(definitional.parts().get(1))).equals());
         // TODO more content assertions
     }
 
