@@ -65,6 +65,9 @@ public class ArticleParser {
             else if (remainder.startsWith(TextItemType.DEFINITIONAL.getPattern())) {
                 textItems.add(parseDefinitional(remainder));
             }
+            else if (remainder.startsWith(TextItemType.REGISTRATION.getPattern())) {
+                textItems.add(parseRegistration(remainder));
+            }
             // TODO parse remaining text items
             else {
                 throw new ParseException("Unknown remainder!");
@@ -431,6 +434,12 @@ public class ArticleParser {
 
     protected Definiens parseDefiniens(final String context) {
         // TODO implement
+        return null;
+    }
+
+    protected RegistrationItem parseRegistration(final StringWrapper remainder) {
+        // TODO implement
+
         return null;
     }
 
