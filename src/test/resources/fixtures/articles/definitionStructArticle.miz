@@ -1,0 +1,20 @@
+environ
+
+  vocabularies SUBSET_1, STRUCT_0;
+
+begin
+
+definition
+  struct 1-sorted(# carrier -> set #);
+end;
+
+definition
+  struct (1-sorted) ZeroStr
+  (# carrier -> set, ZeroF -> Element of the carrier #);
+  struct (1-sorted) OneStr(# carrier -> set, OneF -> Element of the carrier #);
+end;
+
+definition
+  struct (ZeroStr,OneStr) ZeroOneStr(# carrier -> set, ZeroF -> Element of the
+    carrier, OneF -> Element of the carrier #);
+end;

@@ -178,6 +178,9 @@ public class ArticleParser {
                     parts.add(parsePredicateDef(excerpt.substring(Definition.PREDICATE.length()), redefine));
                 }
                 else if (excerpt.startsWith(Definition.STRUCTURE)) {
+                    if (redefine) {
+                        throw new ParseException("structs cannot be redefined!");
+                    }
                     parts.add(parseStructureDef(excerpt.substring(Definition.STRUCTURE.length())));
                 }
                 else {
@@ -290,8 +293,62 @@ public class ArticleParser {
     }
 
     protected StructureDefinition parseStructureDef(final StringWrapper remainder) throws ParseException {
+        int sepIndex = remainder.indexOf(';');
+        if (sepIndex == -1) {
+            throw new ParseException("Missing ';'");
+        }
+        String excerpt = remainder.getString().substring(0, sepIndex);
+        remainder.substring(sepIndex+1).trim();
+        if (!excerpt.endsWith("#)")) {
+            throw new ParseException("Missing '#)'!");
+        }
+        sepIndex = excerpt.indexOf("(#");
+        if (sepIndex == -1) {
+            throw new ParseException("Missing '(#'!");
+        }
+        final List<FieldSegment> fields = parseFields(excerpt.substring(sepIndex+2,excerpt.length()-2).trim());
+        final int lociIndex = excerpt.indexOf("over");
+        final List<String> loci;
+        if (lociIndex != -1) {
+            loci = parseStringList(excerpt.substring(lociIndex+4,sepIndex).trim());
+            sepIndex = lociIndex;
+        }
+        else {
+            loci = Collections.emptyList();
+        }
+        // sepIndex is now guaranteed to be right after the structure symbol
+        excerpt = excerpt.substring(0, sepIndex).trim();
+        sepIndex = excerpt.lastIndexOf(' ');
+        final Ancestors ancestors;
+        final String structName;
+        if (sepIndex == -1) {
+            // no ancestors
+            ancestors = null;
+            structName = excerpt;
+        }
+        else {
+            structName = excerpt.substring(sepIndex+1);
+            if (excerpt.charAt(0) != '(') {
+                throw new ParseException("Missing '(' for ancestors of "+structName+"!");
+            }
+            sepIndex = excerpt.lastIndexOf(')');
+            if (sepIndex == -1) {
+                throw new ParseException("Missing ')' for ancestors of "+structName+"!");
+            }
+            ancestors = parseAncestors(excerpt.substring(1, sepIndex).trim());
+        }
+        return new StructureDefinition(structName, ancestors, loci, fields);
+    }
+
+    protected Ancestors parseAncestors(final String content) {
         // TODO implement
         return null;
+    }
+
+    protected List<FieldSegment> parseFields(final String content) {
+        final List<FieldSegment> fields = new LinkedList<>();
+        // TODO implement
+        return fields;
     }
 
     protected Definiens parseDefiniens(final String context) {

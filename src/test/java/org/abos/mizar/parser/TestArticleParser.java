@@ -118,6 +118,20 @@ public class TestArticleParser {
     }
 
     @Test
+    public void testDefinitionStructArticle() throws Exception {
+        String structArticleStr = Utils.loadFromResource("/fixtures/articles/definitionStructArticle.miz");
+        Article structArticle = new ArticleParser().parse("STRUCT", structArticleStr);
+        Assertions.assertEquals(3, structArticle.getTextItems().size());
+        DefinitionalItem definitional = (DefinitionalItem)structArticle.getTextItems().get(0);
+        Assertions.assertEquals(1, definitional.parts().size());
+        definitional = (DefinitionalItem)structArticle.getTextItems().get(1);
+        Assertions.assertEquals(2, definitional.parts().size());
+        definitional = (DefinitionalItem)structArticle.getTextItems().get(2);
+        Assertions.assertEquals(1, definitional.parts().size());
+        // TODO more content assertions
+    }
+
+    @Test
     public void testTheoremArticle() throws Exception {
         String thsArticleStr = Utils.loadFromResource("/fixtures/articles/theoremArticle.miz");
         Article thsArticle = new ArticleParser().parse("THS", thsArticleStr);
